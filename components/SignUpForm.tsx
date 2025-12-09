@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Toast } from "@/components/ui/toast";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -38,7 +38,6 @@ export function SignUpForm() {
       [name]: value,
     }));
   };
-
 
   const showToast = (message: string, type: "success" | "error" | "info") => {
     setToast({
@@ -117,10 +116,12 @@ export function SignUpForm() {
       }
 
       showToast("OTP sent to your email", "success");
-      
+
       // Navigate to verify OTP page after a brief delay
       setTimeout(() => {
-        router.push(`/auth/verifyotp?email=${encodeURIComponent(formData.email)}`);
+        router.push(
+          `/auth/verifyotp?email=${encodeURIComponent(formData.email)}`
+        );
       }, 1000);
     } catch (error) {
       console.error("Signup error:", error);
@@ -133,106 +134,107 @@ export function SignUpForm() {
     <>
       <div className="w-full max-w-md mx-auto">
         <Card>
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Create Account</h2>
-            <p className="text-sm text-gray-600 mt-1">Sign up to get started</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                name="firstName"
-                type="text"
-                placeholder="John"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                disabled={loading}
-                required
-              />
+          <CardTitle className="px-6">Create Account</CardTitle>
+          <CardContent>
+            <div className="mb-6">
+              <p className="text-sm text-gray-600 mt-1">
+                Sign up to get started
+              </p>
             </div>
 
-            <div>
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                name="lastName"
-                type="text"
-                placeholder="Doe"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                disabled={loading}
-                required
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  placeholder="John"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  required
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="john@example.com"
-                value={formData.email}
-                onChange={handleInputChange}
-                disabled={loading}
-                required
-              />
-            </div>
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  required
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="At least 8 characters"
-                value={formData.password}
-                onChange={handleInputChange}
-                disabled={loading}
-                required
-              />
-            </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  required
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Repeat your password"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                disabled={loading}
-                required
-              />
-            </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="At least 8 characters"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  required
+                />
+              </div>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full mt-6"
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <Spinner />
-                  <span>Sending OTP...</span>
-                </div>
-              ) : (
-                "Sign Up"
-              )}
-            </Button>
-          </form>
+              <div>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Repeat your password"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  required
+                />
+              </div>
+              <CardFooter>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full mt-6"
+                >
+                  {loading ? (
+                    <div className="flex items-center gap-2">
+                      <Spinner />
+                      <span>Sending OTP...</span>
+                    </div>
+                  ) : (
+                    "Sign Up"
+                  )}
+                </Button>
+              </CardFooter>
+            </form>
+          </CardContent>
         </Card>
       </div>
 
       {toast.show && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={closeToast}
-        />
+        <Toast message={toast.message} type={toast.type} onClose={closeToast} />
       )}
     </>
   );
