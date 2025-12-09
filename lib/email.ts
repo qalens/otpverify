@@ -1,4 +1,4 @@
-import sgMail from '@sendgrid/mail';
+import sgMail from "@sendgrid/mail";
 
 /**
  * Initialize SendGrid client with API key from environment
@@ -6,7 +6,7 @@ import sgMail from '@sendgrid/mail';
 const initializeSendGrid = () => {
   const apiKey = process.env.SENDGRID_API_KEY;
   if (!apiKey) {
-    throw new Error('SENDGRID_API_KEY environment variable is not set');
+    throw new Error("SENDGRID_API_KEY environment variable is not set");
   }
   sgMail.setApiKey(apiKey);
 };
@@ -24,18 +24,25 @@ export async function sendOTPEmail(
   firstName: string
 ): Promise<void> {
   try {
-    initializeSendGrid();
+    const dontSendEmail = process.env.DONT_SEND_EMAIL == "true";
+    if (dontSendEmail) {
+      console.log(
+        `DONT_SEND_EMAIL is set. Skipping sending email to ${email} with OTP: ${otp}`
+      );
+      return;
+    } else {
+      initializeSendGrid();
 
-    const fromEmail = process.env.SENDGRID_FROM_EMAIL;
-    if (!fromEmail) {
-      throw new Error('SENDGRID_FROM_EMAIL environment variable is not set');
-    }
+      const fromEmail = process.env.SENDGRID_FROM_EMAIL;
+      if (!fromEmail) {
+        throw new Error("SENDGRID_FROM_EMAIL environment variable is not set");
+      }
 
-    const message = {
-      to: email,
-      from: fromEmail,
-      subject: 'Your OTP Code for Email Verification',
-      html: `
+      const message = {
+        to: email,
+        from: fromEmail,
+        subject: "Your OTP Code for Email Verification",
+        html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px;">
             <h2 style="color: #333; margin-bottom: 20px;">Email Verification</h2>
@@ -70,13 +77,14 @@ export async function sendOTPEmail(
           </div>
         </div>
       `,
-      text: `Your OTP code is: ${otp}. This code will expire in 30 minutes. Do not share this code with anyone.`,
-    };
+        text: `Your OTP code is: ${otp}. This code will expire in 30 minutes. Do not share this code with anyone.`,
+      };
 
-    await sgMail.send(message);
-    console.log(`OTP email sent successfully to ${email}`);
+      await sgMail.send(message);
+      console.log(`OTP email sent successfully to ${email}`);
+    }
   } catch (error) {
-    console.error('Failed to send OTP email:', error);
-    throw new Error('Failed to send OTP email. Please try again later.');
+    console.error("Failed to send OTP email:", error);
+    throw new Error("Failed to send OTP email. Please try again later.");
   }
 }
