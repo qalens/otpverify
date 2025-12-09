@@ -15,6 +15,13 @@
       "when": 1765287191850,
       "tag": "0001_smart_human_cannonball",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765294657691,
+      "tag": "0002_icy_magdalene",
+      "breakpoints": true
     }
   ]
 }

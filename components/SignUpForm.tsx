@@ -27,6 +27,8 @@ export function SignUpForm() {
     firstName: "",
     lastName: "",
     email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +38,7 @@ export function SignUpForm() {
       [name]: value,
     }));
   };
+
 
   const showToast = (message: string, type: "success" | "error" | "info") => {
     setToast({
@@ -67,6 +70,18 @@ export function SignUpForm() {
       showToast("Please enter a valid email", "error");
       return false;
     }
+    if (!formData.password) {
+      showToast("Password is required", "error");
+      return false;
+    }
+    if (formData.password.length < 8) {
+      showToast("Password must be at least 8 characters", "error");
+      return false;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      showToast("Passwords do not match", "error");
+      return false;
+    }
     return true;
   };
 
@@ -89,6 +104,7 @@ export function SignUpForm() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
+          password: formData.password,
         }),
       });
 
@@ -159,6 +175,34 @@ export function SignUpForm() {
                 type="email"
                 placeholder="john@example.com"
                 value={formData.email}
+                onChange={handleInputChange}
+                disabled={loading}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="At least 8 characters"
+                value={formData.password}
+                onChange={handleInputChange}
+                disabled={loading}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="Repeat your password"
+                value={formData.confirmPassword}
                 onChange={handleInputChange}
                 disabled={loading}
                 required

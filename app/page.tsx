@@ -19,8 +19,12 @@ export default function Home() {
                 <Button>Sign Up</Button>
               </Link>
 
+              <Link href="/auth/login" className="inline-block">
+                <Button variant="outline">Login</Button>
+              </Link>
+
               <Link href="/dashboard" className="inline-block">
-                <Button variant="outline">Go To Dashboard</Button>
+                <Button variant="ghost">Go To Dashboard</Button>
               </Link>
             </div>
           </div>

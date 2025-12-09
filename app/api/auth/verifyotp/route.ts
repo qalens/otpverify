@@ -2,6 +2,7 @@ import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
+import { signToken } from '@/lib/auth';
 
 /**
  * POST /api/auth/verifyotp
@@ -65,7 +66,9 @@ export async function POST(request: NextRequest) {
       })
       .where(eq(users.id, user.id));
 
-    return NextResponse.json(
+    // Create JWT and set as an HttpOnly cookie so user is automatically signed in after verification
+    const token = signToken({ userId: user.id, email });
+    const res = NextResponse.json(
       {
         success: true,
         message: 'Email verified successfully!',
@@ -73,6 +76,15 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
+
+    // Set cookie for 7 days. Omit Secure flag in development (localhost) so cookie can be set without HTTPS.
+    const maxAge = 60 * 60 * 24 * 7; // 7 days
+    const secureFlag = process.env.NODE_ENV === 'production' ? 'Secure; ' : '';
+    res.headers.set(
+      'Set-Cookie',
+      `token=${encodeURIComponent(token)}; Path=/; HttpOnly; ${secureFlag}SameSite=Lax; Max-Age=${maxAge}`
+    );
+    return res;
   } catch (error) {
     console.error('OTP verification error:', error);
     return NextResponse.json(

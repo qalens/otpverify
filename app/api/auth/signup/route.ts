@@ -3,6 +3,7 @@ import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { sendOTPEmail } from '@/lib/email';
+import bcrypt from 'bcryptjs';
 
 /**
  * Generate a random 6-digit OTP
@@ -18,12 +19,12 @@ function generateOTP(): string {
  */
 export async function POST(request: NextRequest) {
   try {
-    const { email, firstName, lastName } = await request.json();
+    const { email, firstName, lastName, password } = await request.json();
 
     // Validate input
-    if (!email || !firstName || !lastName) {
+    if (!email || !firstName || !lastName || !password) {
       return NextResponse.json(
-        { error: 'Missing required fields: email, firstName, lastName' },
+        { error: 'Missing required fields: email, firstName, lastName, password' },
         { status: 400 }
       );
     }
@@ -40,6 +41,17 @@ export async function POST(request: NextRequest) {
     // Generate OTP
     const otp = generateOTP();
 
+    // Validate password length
+    if (typeof password !== 'string' || password.length < 8) {
+      return NextResponse.json(
+        { error: 'Password must be at least 8 characters long' },
+        { status: 400 }
+      );
+    }
+
+    // Hash password
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
     // Check if user already exists
     const existingUser = await db
       .select()
@@ -48,23 +60,25 @@ export async function POST(request: NextRequest) {
       .limit(1);
 
     if (existingUser.length > 0) {
-      // Update existing user with new OTP
+      // Update existing user with new OTP and password
       await db
         .update(users)
         .set({
           firstName,
           lastName,
           otp,
+          password: hashedPassword,
           updatedAt: new Date(),
         })
         .where(eq(users.email, email));
     } else {
-      // Create new user with OTP
+      // Create new user with OTP and hashed password
       await db.insert(users).values({
         email,
         firstName,
         lastName,
         otp,
+        password: hashedPassword,
         verified: false,
       });
     }
