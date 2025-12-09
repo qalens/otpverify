@@ -2,6 +2,7 @@ import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
+import { sendOTPEmail } from '@/lib/email';
 
 /**
  * Generate a random 6-digit OTP
@@ -13,7 +14,7 @@ function generateOTP(): string {
 /**
  * POST /api/auth/signup
  * Receives: { email, firstName, lastName }
- * Generates a 6-digit OTP and stores it in Neon DB with 10-minute expiry
+ * Generates a 6-digit OTP and sends it via email
  */
 export async function POST(request: NextRequest) {
   try {
@@ -68,23 +69,22 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // In production, send OTP via email instead of returning it
-    console.log(`OTP for ${email}: ${otp}`);
+    // Send OTP via email
+    await sendOTPEmail(email, otp, firstName);
 
     return NextResponse.json(
       {
         success: true,
-        message: 'OTP sent to email. Please verify.',
+        message: 'OTP sent to your email. Please verify.',
         email,
-        // TODO: Remove otp from response in production, send via email service instead
-        otp,
       },
       { status: 200 }
     );
   } catch (error) {
     console.error('Signup error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create signup request';
     return NextResponse.json(
-      { error: 'Failed to create signup request' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
