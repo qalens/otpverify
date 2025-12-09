@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
 
     // Generate OTP
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
     // Check if user already exists
     const existingUser = await db
@@ -55,7 +54,6 @@ export async function POST(request: NextRequest) {
           firstName,
           lastName,
           otp,
-          otpExpiry,
           updatedAt: new Date(),
         })
         .where(eq(users.email, email));
@@ -66,7 +64,6 @@ export async function POST(request: NextRequest) {
         firstName,
         lastName,
         otp,
-        otpExpiry,
         verified: false,
       });
     }

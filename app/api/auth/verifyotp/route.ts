@@ -45,14 +45,7 @@ export async function POST(request: NextRequest) {
 
     const user = userResult[0];
 
-    // Check if OTP has expired
-    const now = new Date();
-    if (!user.otpExpiry || now > user.otpExpiry) {
-      return NextResponse.json(
-        { error: 'OTP has expired. Please sign up again.' },
-        { status: 400 }
-      );
-    }
+    // No expiry check — OTPs do not expire per configuration
 
     // Verify OTP matches
     if (user.otp !== otp) {
@@ -68,7 +61,6 @@ export async function POST(request: NextRequest) {
       .set({
         verified: true,
         otp: null,
-        otpExpiry: null,
         updatedAt: new Date(),
       })
       .where(eq(users.id, user.id));

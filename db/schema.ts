@@ -7,7 +7,6 @@ export const users = pgTable('users', {
     firstName: varchar({ length: 100 }).notNull(),
     lastName: varchar({ length: 100 }).notNull(),
     otp: varchar({ length: 6 }),
-    otpExpiry: timestamp(),
     verified: boolean().default(false).notNull(),
     createdAt: timestamp().default(sql`CURRENT_TIMESTAMP`).notNull(),
     updatedAt: timestamp().default(sql`CURRENT_TIMESTAMP`).notNull(),

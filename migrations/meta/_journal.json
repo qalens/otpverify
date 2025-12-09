@@ -8,6 +8,13 @@
       "when": 1765285933581,
       "tag": "0000_wakeful_black_bird",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1765287191850,
+      "tag": "0001_smart_human_cannonball",
+      "breakpoints": true
     }
   ]
 }
