@@ -133,7 +133,7 @@ export function SignUpForm() {
   return (
     <>
       <div className="w-full max-w-md mx-auto">
-        <Card>
+        <Card id="signup-form">
           <CardTitle className="px-6">Create Account</CardTitle>
           <CardContent>
             <div className="mb-6">

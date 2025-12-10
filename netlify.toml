@@ -1,0 +1,4 @@
+[dev]
+  framework = "next"
+  targetPort = 3001   # The port Next.js runs on
+  port = 9999 

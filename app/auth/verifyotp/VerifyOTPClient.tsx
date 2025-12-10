@@ -97,7 +97,7 @@ export default function VerifyOTPClient() {
   return (
     <>
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-        <Card>
+        <Card id="verify-otp-form">
           <CardTitle className="px-6">Verify OTP</CardTitle>
           <CardContent>
             <div className="mb-6">
