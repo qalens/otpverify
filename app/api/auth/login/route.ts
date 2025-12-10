@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       .limit(1);
 
     if (usersResult.length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 404 });
     }
 
     const user = usersResult[0] as any;
