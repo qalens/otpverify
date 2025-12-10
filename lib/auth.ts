@@ -7,8 +7,8 @@ if (!JWT_SECRET) {
   console.warn('JWT_SECRET is not set. Auth will not be secure.');
 }
 
-export function signToken(payload: object, expiresIn = '7d') {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn });
+export function signToken(payload: object, expiresIn:any = "7d") {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn });
 }
 
 export function verifyToken(token: string) {
