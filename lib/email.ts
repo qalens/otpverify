@@ -21,10 +21,11 @@ const initializeSendGrid = () => {
 export async function sendOTPEmail(
   email: string,
   otp: string,
-  firstName: string
+  firstName: string,
+  dontSendEmail?:boolean,
 ): Promise<void> {
   try {
-    const dontSendEmail = process.env.DONT_SEND_EMAIL == "true";
+    
     if (dontSendEmail) {
       console.log(
         `DONT_SEND_EMAIL is set. Skipping sending email to ${email} with OTP: ${otp}`

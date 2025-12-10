@@ -34,7 +34,7 @@ export default async function DashboardPage() {
     <main className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-3xl rounded-lg border bg-card p-8 shadow-sm">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="mt-4">Welcome back, {user.firstName} {user.lastName} ({user.email})</p>
+        <p className="mt-4" id='welcome-message'>Welcome back, {user.firstName} {user.lastName} ({user.email})</p>
         <form method="post" action="/api/auth/logout" className="mt-6">
           <button type="submit" className="px-4 py-2 rounded bg-sky-600 text-white">Logout</button>
         </form>

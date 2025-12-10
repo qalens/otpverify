@@ -1,14 +1,15 @@
-import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { NextRequest, NextResponse } from 'next/server';
-import { sendOTPEmail } from '@/lib/email';
-import bcrypt from 'bcryptjs';
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+import { sendOTPEmail } from "@/lib/email";
+import bcrypt from "bcryptjs";
 
 /**
  * Generate a random 6-digit OTP
  */
-function generateOTP(): string {
+function generateOTP(fakeOTP: boolean): string {
+  if (fakeOTP) return "123456";
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
@@ -24,7 +25,10 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!email || !firstName || !lastName || !password) {
       return NextResponse.json(
-        { error: 'Missing required fields: email, firstName, lastName, password' },
+        {
+          error:
+            "Missing required fields: email, firstName, lastName, password",
+        },
         { status: 400 }
       );
     }
@@ -33,18 +37,18 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Invalid email format' },
+        { error: "Invalid email format" },
         { status: 400 }
       );
     }
-
+    const fakeOTP = process.env.DONT_SEND_EMAIL == "true";
     // Generate OTP
-    const otp = generateOTP();
+    const otp = generateOTP(fakeOTP);
 
     // Validate password length
-    if (typeof password !== 'string' || password.length < 8) {
+    if (typeof password !== "string" || password.length < 8) {
       return NextResponse.json(
-        { error: 'Password must be at least 8 characters long' },
+        { error: "Password must be at least 8 characters long" },
         { status: 400 }
       );
     }
@@ -84,22 +88,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Send OTP via email
-    await sendOTPEmail(email, otp, firstName);
+    await sendOTPEmail(email, otp, firstName, fakeOTP);
 
     return NextResponse.json(
       {
         success: true,
-        message: 'OTP sent to your email. Please verify.',
+        message: "OTP sent to your email. Please verify.",
         email,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error('Signup error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create signup request';
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    console.error("Signup error:", error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Failed to create signup request";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
