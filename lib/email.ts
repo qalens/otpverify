@@ -42,7 +42,7 @@ export async function sendOTPEmail(
       const message = {
         to: email,
         from: fromEmail,
-        subject: "Your OTP Code for Email Verification",
+        subject: "Your OTP Code for Registration",
         html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px;">
