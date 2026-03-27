@@ -1,18 +1,45 @@
-import sgMail from "@sendgrid/mail";
+import nodemailer from "nodemailer";
 
 /**
- * Initialize SendGrid client with API key from environment
+ * Initialize SMTP transporter with environment variables
  */
-const initializeSendGrid = () => {
-  const apiKey = process.env.SENDGRID_API_KEY;
-  if (!apiKey) {
-    throw new Error("SENDGRID_API_KEY environment variable is not set");
+const createSmtpTransporter = () => {
+  const host = process.env.SMTP_HOST;
+  const portRaw = process.env.SMTP_PORT;
+  const secureRaw = process.env.SMTP_SECURE;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!host) {
+    throw new Error("SMTP_HOST environment variable is not set");
   }
-  sgMail.setApiKey(apiKey);
+  if (!portRaw) {
+    throw new Error("SMTP_PORT environment variable is not set");
+  }
+
+  const port = Number.parseInt(portRaw, 10);
+  if (Number.isNaN(port) || port <= 0) {
+    throw new Error("SMTP_PORT must be a valid number");
+  }
+
+  const secure = secureRaw
+    ? secureRaw.toLowerCase() === "true"
+    : port === 465;
+
+  if (user && !pass) {
+    throw new Error("SMTP_PASS environment variable is not set");
+  }
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: user ? { user, pass: pass ?? "" } : undefined,
+  });
 };
 
 /**
- * Send OTP via email using SendGrid
+ * Send OTP via email using SMTP relay
  * @param email - Recipient email address
  * @param otp - 6-digit OTP code
  * @param firstName - User's first name (for personalization)
@@ -32,11 +59,11 @@ export async function sendOTPEmail(
       );
       return;
     } else {
-      initializeSendGrid();
+      const transporter = createSmtpTransporter();
 
-      const fromEmail = process.env.SENDGRID_FROM_EMAIL;
+      const fromEmail = process.env.SMTP_FROM_EMAIL;
       if (!fromEmail) {
-        throw new Error("SENDGRID_FROM_EMAIL environment variable is not set");
+        throw new Error("SMTP_FROM_EMAIL environment variable is not set");
       }
 
       const message = {
@@ -81,7 +108,7 @@ export async function sendOTPEmail(
         text: `Your OTP code is: ${otp}. This code will expire in 30 minutes. Do not share this code with anyone.`,
       };
 
-      await sgMail.send(message);
+      await transporter.sendMail(message);
       console.log(`OTP email sent successfully to ${email}`);
     }
   } catch (error) {
